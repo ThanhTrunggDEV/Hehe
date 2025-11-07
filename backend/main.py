@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from model import UserSignUp, User
+from model import User
 from database import get_db_connection, init_db
 from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
@@ -21,7 +21,7 @@ def startup():
 
 
 @app.post("/signup")
-def signup(user: UserSignUp):
+def signup(user: User):
     connect = get_db_connection()
     cursor = connect.cursor()
     cursor.execute("SELECT * FROM users WHERE username = ?", (user.username,))
@@ -29,8 +29,9 @@ def signup(user: UserSignUp):
     if existing_user:
         connect.close()
         return {'message': 'Username already exists'}
-    cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (user.username, user.password))
+    cursor.execute("INSERT INTO users (username, password, name) VALUES (?, ?, ?)", (user.username, user.password, user.name))
     connect.commit()
+    return {'message': 'User registered successfully'}
     
 @app.post("/login")
 def login(user: User):
