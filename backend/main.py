@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from model import User
+from model import User, UserLogin
 from database import get_db_connection, init_db
 from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
@@ -34,7 +34,7 @@ def signup(user: User):
     return {'message': 'User registered successfully'}
     
 @app.post("/login")
-def login(user: User):
+def login(user: UserLogin):
     connect = get_db_connection()
     cursor = connect.cursor()
     cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", (user.username, user.password))

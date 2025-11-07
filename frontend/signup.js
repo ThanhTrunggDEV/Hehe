@@ -9,17 +9,22 @@ btnSignU.addEventListener('click', async () => {
         alert("Passwords do not match!");
         return;
     }
-    const res = await fetch(`${API_BASE}/signup`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password, name })
-        });
-    let result = await res.json();
-    if (result.success) {
-        alert("Sign up successful");
-    }
-    else{
-        alert("Sign up failed: " + result.message);
+    try {
+        const res = await fetch(`${API_BASE}/signup`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password, name })
+            });
+        const result = await res.json().catch(() => ({}));
+        if (res.ok && (result.message === 'User registered successfully' || result.message === 'Signup successful')) {
+            alert("Sign up successful");
+
+        } else {
+            alert("Sign up failed: " + (result.message || 'Unknown error'));
+        }
+    } catch (e) {
+        console.error(e);
+        alert('Sign up failed: network error');
     }
 }
 );

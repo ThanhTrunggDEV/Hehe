@@ -5,25 +5,29 @@ btnLogin.addEventListener('click', async () => {
     let username = document.getElementById('txtUsername').value;
     let password = document.getElementById('txtPassword').value;
     
+    try {
+        const res = await fetch(`${API_BASE}/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            });
+        const result = await res.json().catch(() => ({}));
 
-    const res = await fetch(`${API_BASE}/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password })
-        });
-    let result = await res.json();
-
-    if (result.success) {
-        Window.location.href = 'mainWindow.html';
-    }
-    else{
-        alert("Login failed: " + result.message);
+        const success = res.ok && (result.message === 'Login successful');
+        if (success) {
+            window.location.href = 'mainWindow.html';
+        } else {
+            alert("Login failed: " + (result.message || 'Unknown error'));
+        }
+    } catch (e) {
+        console.error(e);
+        alert('Login failed: network error');
     }
 });
 
 let btnSignUp = document.getElementById('btnSignUp');
 btnSignUp.addEventListener('click', () => {
-    Window.location.href = 'signup.html';
+    window.location.href = 'signup.html';
 });
 
        
